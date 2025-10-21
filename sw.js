@@ -1,5 +1,5 @@
-const CACHE='disp-v1'
-const FILES=['./','./index.html','./manifest.json']
+const CACHE='disp-v1.1'
+const FILES=['./','./404.html','./manifest.json']
 
 self.addEventListener('install',e=>{
 e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)))
