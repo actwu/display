@@ -113,30 +113,30 @@ border-top: 1px solid var(--line);
 </footer>
 
 <script>
-const installBtn = document.getElementById('installBtn');
 const title = document.title.replace(" – Install", "");
 document.getElementById("appTitle").textContent = title;
 
-let deferredPrompt;
-let isStandalone = false;
+const installBtn = document.getElementById('installBtn');
 
-window.addEventListener('load', () => {
-isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-if (isStandalone) {
-window.location.replace('404.html');
-return;
-}
+const isInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+if (isInstalled) {
+installBtn.innerText = 'Open';
+installBtn.hidden = false;
+} else {
 installBtn.hidden = true;
-});
+}
 
-window.addEventListener('beforeinstallprompt', e => {
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
 e.preventDefault();
 deferredPrompt = e;
 installBtn.hidden = false;
 });
 
 installBtn.addEventListener('click', async () => {
-if (installBtn.textContent === 'Open') {
+if (installBtn.innerText === 'Open') {
 window.location.href = '404.html';
 return;
 }
@@ -145,15 +145,20 @@ deferredPrompt.prompt();
 const { outcome } = await deferredPrompt.userChoice;
 deferredPrompt = null;
 if (outcome === 'accepted') {
-installBtn.textContent = 'Open';
+installBtn.innerText = 'Open';
 }
 });
 
+window.addEventListener('appinstalled', () => {
+installBtn.innerText = 'Open';
+installBtn.hidden = false;
+});
 
 if ('serviceWorker' in navigator) {
 navigator.serviceWorker.register('sw.js').catch(console.error);
 }
 </script>
+
 
 </body>
 </html>
