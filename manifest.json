@@ -1,7 +1,7 @@
 {
 "name": "Disp",
 "short_name": "Disp",
-"start_url": "index.html",
+"start_url": "404.html",
 "display": "standalone",
 "background_color": "#0b0b0b",
 "theme_color": "#0b0b0b",
