@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-
 <title>Disp</title>
 <meta name="description" content="Disp is a display">
 <meta name="keywords" content="Display">
@@ -34,13 +33,11 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Disp","url":"https://actwu.github.io/","logo":"","description":"Disp is a display"}</script>
 <style>
-:root{
---bg:#0b0b0b;--accent:#e6e6e6;
-}
+:root{--bg:#0b0b0b;--accent:#e6e6e6;}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--accent);font-family:system-ui, sans-serif}
 .app{display:flex;flex-direction:column;height:100vh}
-.topbar{display:flex;align-items:center;justify-content:flex-end;padding:10px;background:#111;border-bottom:1px solid rgba(255,255,255,0.05)}
-button{background:transparent;border:0;color:var(--accent);padding:6px 10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.topbar{display:flex;align-items:center;justify-content:flex-start;gap:8px;padding:6px;position:sticky;top:0;left:0;background:none;border:0}
+button{background:transparent;border:0;color:var(--accent);padding:4px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 svg{width:24px;height:24px;stroke:currentColor}
 textarea{flex:1;background:transparent;border:0;outline:none;padding:20px;color:var(--accent);resize:none;font-size:20px;line-height:1.5;font-family:ui-monospace, monospace}
 .main{flex:1;display:flex}
@@ -53,9 +50,13 @@ textarea{flex:1;background:transparent;border:0;outline:none;padding:20px;color:
 <div class="app">
 <div class="topbar">
 <button id="btn-preview" title="Preview">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-airplay"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"/><path d="m12 15 5 6H7Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"/><path d="m12 15 5 6H7Z"/></svg>
+</button>
+<button id="btn-pip" title="Picture-in-Picture">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 10h6V4"/><path d="m2 4 6 6"/><path d="M21 10V7a2 2 0 0 0-2-2h-7"/><path d="M3 14v2a2 2 0 0 0 2 2h3"/><rect x="12" y="14" width="10" height="7" rx="1"/></svg>
 </button>
 </div>
+
 <div class="main">
 <textarea id="editor" placeholder="Type your stage text here..."></textarea>
 </div>
@@ -68,19 +69,14 @@ textarea{flex:1;background:transparent;border:0;outline:none;padding:20px;color:
 <script>
 const editor=document.getElementById('editor');
 const btnPreview=document.getElementById('btn-preview');
+const btnPip=document.getElementById('btn-pip');
 const previewFull=document.getElementById('previewFull');
 const previewText=document.getElementById('previewText');
 
-function autoFontSize() {
-const max = window.innerHeight * 0.8;
-const minFont = 16;
-let size = 100;
-previewText.style.fontSize = size + 'px';
-
-while (previewText.scrollHeight > max && size > minFont) {
-size -= 2;
-previewText.style.fontSize = size + 'px';
-}
+function autoFontSize(){
+const max=window.innerHeight*0.8;let size=100;const min=16;
+previewText.style.fontSize=size+'px';
+while(previewText.scrollHeight>max&&size>min){size-=2;previewText.style.fontSize=size+'px';}
 }
 
 async function openPreview(){
@@ -96,13 +92,23 @@ previewFull.classList.remove('show');
 try{if(document.fullscreenElement)document.exitFullscreen();}catch(e){}
 }
 
+async function openPiP(){
+try{
+if(!document.pictureInPictureElement){
+const blob=new Blob([`<html><body style='background:black;margin:0;color:white;display:flex;align-items:center;justify-content:center;'><div style='font-size:2vw;text-align:center;white-space:pre-wrap;'>${editor.value||'—'}</div></body></html>`],{type:'text/html'});
+const url=URL.createObjectURL(blob);
+const video=document.createElement('video');
+video.src=url;video.autoplay=true;video.muted=true;video.play();
+await video.requestPictureInPicture();
+}else{await document.exitPictureInPicture();}
+}catch(e){console.warn('PiP not supported',e);}
+}
+
 btnPreview.addEventListener('click',openPreview);
+btnPip.addEventListener('click',openPiP);
 previewFull.addEventListener('click',closePreview);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePreview();});
-
-window.addEventListener('resize',()=>{
-if(previewFull.classList.contains('show')) autoFontSize();
-});
+window.addEventListener('resize',()=>{if(previewFull.classList.contains('show'))autoFontSize();});
 </script>
 </body>
 </html>
