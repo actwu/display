@@ -112,32 +112,40 @@ border-top: 1px solid var(--line);
 </footer>
 
 <script>
-// Dynamic title
+const installBtn = document.getElementById('installBtn');
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if (isStandalone) {
+window.location.href = '404.html';
+} else {
+installBtn.hidden = true;
+}
 const title = document.title.replace(" – Install", "");
 document.getElementById("appTitle").textContent = title;
-
-// PWA install handler
 let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
 window.addEventListener('beforeinstallprompt', e => {
 e.preventDefault();
 deferredPrompt = e;
 installBtn.hidden = false;
 });
-
 installBtn.addEventListener('click', async () => {
+if (installBtn.textContent === 'Open') {
+window.location.href = '404.html';
+return;
+}
 if (!deferredPrompt) return;
 deferredPrompt.prompt();
 const { outcome } = await deferredPrompt.userChoice;
 deferredPrompt = null;
 installBtn.hidden = true;
 });
-
-// Optional: service worker registration
 if ('serviceWorker' in navigator) {
 navigator.serviceWorker.register('sw.js').catch(console.error);
 }
+window.addEventListener('appinstalled', () => {
+installBtn.textContent = 'Open';
+installBtn.hidden = false;
+});
+
 </script>
 </body>
 </html>
