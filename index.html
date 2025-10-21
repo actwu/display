@@ -103,6 +103,7 @@ border-top: 1px solid var(--line);
 </set>
 <set >
 <h1 id="appTitle">App Title</h1>
+<btn onmousedown="window.location.href = '404.html';">Open</btn>
 <btn id="installBtn">Install</btn>
 </set>  <set >
 </set>
@@ -148,10 +149,6 @@ installBtn.textContent = 'Open';
 }
 });
 
-window.addEventListener('appinstalled', () => {
-installBtn.textContent = 'Open';
-installBtn.hidden = false;
-});
 
 if ('serviceWorker' in navigator) {
 navigator.serviceWorker.register('sw.js').catch(console.error);
