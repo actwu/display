@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0b0b">
 
 <title>Disp</title>
 <meta name="description" content="Disp is a display">
@@ -129,6 +131,11 @@ anim=requestAnimationFrame(animateCanvas)
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePreview()})
 window.addEventListener('resize',()=>{if(previewFull.classList.contains('show'))autoFontSize()})
 renderToCanvas()
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(e=>console.warn('SW failed',e))
+}
 </script>
 
 </body>
